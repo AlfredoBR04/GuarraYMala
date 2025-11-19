@@ -1493,6 +1493,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6338058166827552287, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 840455091}
+    - targetCorrespondingSourceObject: {fileID: 6338058166827552287, guid: 871f05d311d47b744978b155e14694e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 840455092}
   m_SourcePrefab: {fileID: 100100000, guid: 871f05d311d47b744978b155e14694e3, type: 3}
 --- !u!1 &840455086 stripped
 GameObject:
@@ -1600,6 +1603,26 @@ MonoBehaviour:
   hasActed: 0
   hasAttacked: 0
   isPlayerUnit: 0
+--- !u!114 &840455092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840455086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24c74c2abc3dbe142bd2664f52005c68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacter
+  name: Ellen
+  maxLife: 100
+  baseAttackDamage: 10
+  armorValue: 10
+  equipmentList:
+  - {fileID: 11400000, guid: 19b580b1433c2954396092a58a90d18c, type: 2}
+  weaponList:
+  - {fileID: 11400000, guid: 7b255efc25951bc4b97f1f489784a828, type: 2}
 --- !u!1 &868136439
 GameObject:
   m_ObjectHideFlags: 0

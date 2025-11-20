@@ -9,6 +9,7 @@ public class Units : MonoBehaviour
     bool hasMoved = false;
     public bool isPlayerUnit;
     ClickToMove clickToMove;
+    Shooting Shooting;
 
     
 
@@ -19,7 +20,7 @@ public class Units : MonoBehaviour
 
     private void Awake()
 {
-    clickToMove = GetComponent<ClickToMove>();
+    
     if (clickToMove != null)
     {
         clickToMove.enabled = false;
@@ -46,6 +47,7 @@ public class Units : MonoBehaviour
         {
             Debug.Log(characterName + " • an enemy unit is moving.");
         }
+        
 
         
     }
@@ -53,12 +55,22 @@ public class Units : MonoBehaviour
     public void Attack()
     {
         if (hasActed || hasAttacked)
+        {
             return;
+        }
 
+        if (isFriendly)
+        {
+            Shooting.enabled = true;
+        }
         Debug.Log(characterName + " is attacking.");
-
-        FinishAttack();
+        else 
+        {
+            Debug.Log(characterName + "usa la accion Atacar");
+                FinishActtack();
+        }
     }
+
 
     public void PassTurn()
     {

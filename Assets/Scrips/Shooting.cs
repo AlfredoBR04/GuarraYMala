@@ -5,25 +5,31 @@ public class Shooting : MonoBehaviour
 {
 
 
-    public void Shoot()
+    public void Shoot(Vector3 enemyPosition, float weaponRange)
     {
-        isOnLoS();
+        if (IsOnLoS(enemyPosition, weaponRange));
+        {
+            Debug.Log("Enemigo en linea de tiro")
+        }
+        else
+        {
+            Debug.Log("Enemigo no esta en linea de tiro");
+        }
     }
 
-    bool isOnLoS;
-
-    public bool isOnS(Vector3 enemyPosition, float weaponRange)
+    public bool IsOnLoS(Vector3 enemyPosition, float weaponRange)
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(Transform.position, enemyTransfor.position, out hit, weaponRange))
+        if (Physics.Raycast(Transform.position, enemyPosition, out hit, weaponRange))
         {
             Character character =hit.collider.GetComponent<Character>();
 
-            if (unit != null)
+            if (character != null)
             {
-                return
+                return true;
             }
         }
-    }
+        return false;
+    }   
 } 

@@ -1,101 +1,140 @@
-using System;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
+using System;
+using UnityEngine.AI;
 
-[RequireComponent (typeof(Unit))]
-[RequireComponent (typeof(Shooting))]
+[RequireComponent(typeof(Units))]
+[RequireComponent(typeof(Shooting))]
 
 public class EnemyAI : MonoBehaviour
 {
-
-    private Units unit;
+    private Units units;
     private Shooting shooting;
-    [SerializeField]private float visionRange = 30f;
+    [SerializeField] float visionRange = 10f;
     private float attackRange;
+    NavMeshAgent agent;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
-    }
-
-    private void Awake()
-    {
-        unit = GetComponent<Units>();
+        units = GetComponent<Units>();
         shooting = GetComponent<Shooting>();
-
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //compruebo que la IA sea Enemiga y no una unidad aliada
-        if (unit.isFriendly) return; 
-
-        //Si es el turno del jugador, entonces no podemos acutar
-        if(TurnManager.Instance.isPlayerTurn)
+        if (units.isFriendly)
         {
-           
-           return;
+            return;
         }
-        // si es el turno del enemigo y esta unidad no ha ejecutado su logica.
-        if (!unit.hasActed)
+        if (TurnManager.Instance.isPlayerTurn)
         {
-            StartCoroutine(DoenemyTurn());
+            //unit.hasActed = true;
+            return;
+        }
+        if (!units.hasActed)
+        {
+            // Lógica simple de IA: buscar la unidad enemiga más cercana y disparar si está en línea de visión
+            StartCoroutine(DoEnemyTurn());
         }
     }
-    IEnumerator DoenemyTurn()
-    {
-        //Encuentra el persinaje aliado mas cercano para atacarle
-        Unit target = FindClosetPlayerUnit();
 
-        //Si no tenemos enemigos, saltamos turno
-        if(target == null)
+
+    private IEnumerator DoEnemyTurn()
+    {
+        Units target = FindClosestPlayerUnit();
+        if (target == null)
         {
-            Debug.Log(unit.characterName + "No encuentra objetivo validos, salta el turno");
-            unit.FinishAction();
+            Debug.Log(units.characterName + ": No player units found, skipping turn.");
+            units.FinishAction();
             yield break;
         }
 
-        //Si esta en linea de vision, le ataco.
         float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
-       if (distanceToTarget <= attackRange && hasLineOfSight(target))
+        if (distanceToTarget <= attackRange && hasLineOfSight(target))
         {
             yield return AttackTarget(target);
         }
-    }
-
-    private IEnumerator AttackTarget(Unit target)
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool hasLineOfSight(Unit target)
-    {
-        throw new NotImplementedException();
-    }
-
-    //funcion que calcula y devuelve cual es la unidad aliada
-    //mas cercana para atacar dentro de un rango de vision
-    private Unit FindClosetPlayerUnit()
-    {
-        Unit closest = null;
-        float closestDist = Mathf.Infinity;
-
-        foreach(Unit playerUnit in TurnManager.Instance.playerUnits)
+        else //Muevo al personaje para que este en la linea de vision
         {
-            float dist = Vector3.Distance(transform.position, playerUnit.transform.position);
-            
-            if(dist < closestDist && dist <= visionRange)
+            yield return MoveTowardTarget(target.transform.position);
+
+            //Vuelvo a intentar disparar al personaje
+
+            distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+
+            if (distanceToTarget <= attackRange && hasLineOfSight(target))
             {
-                closestDist = dist;
+                yield return AttackTarget(target);
+            }
+            else
+                units.FinishAction();
+        }
+
+
+
+    }
+
+    private IEnumerable MoveTowardTarget(Vector3 position)
+    {
+        Debug.Log(unit.characterName + "Se mueve buscando a su objetivo");
+
+
+        agent.destination = targetPosition;
+        yield return new WaitForSeconds(5);
+        units.FinishMove();
+    }
+
+
+    private bool hasLineOfSight(Units target)
+    {
+        return shooting.isOnLoS(target.transform.position, attackRange);
+    }
+
+
+    private IEnumerator AttackTarget(Units target)
+    {
+        Debug.Log(units.characterName + " is attacking " + target.characterName);
+
+        Vector3 lookDirection = target.transform.position - transform.position;
+        lookDirection.y = 0;
+        if (lookDirection != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(lookDirection);
+        }
+
+        shooting.Shoot(target.transform.position, attackRange);
+        units.hasActed = true;
+
+        yield return new WaitForSeconds(1f); // Espera 1 segundo para simular el tiempo de ataque
+
+        if (units.hasMoved)
+        {
+            units.FinishAttack();
+            units.FinishAction
+
+        }
+        else
+        {
+            units.FinishAttack();
+        }
+    }
+
+
+
+    private Units FindClosestPlayerUnit()
+    {
+        Units closest = null;
+        float closestDistance = Mathf.Infinity;
+        foreach (Units playerUnit in TurnManager.Instance.playerUnits)
+        {
+            float distance = Vector3.Distance(transform.position, playerUnit.transform.position);
+            if (distance < closestDistance && distance <= visionRange)
+            {
+                closestDistance = distance;
                 closest = playerUnit;
             }
         }
-
         return closest;
     }
 }

@@ -10,6 +10,7 @@ public class Units : MonoBehaviour
     public bool isPlayerUnit;
     ClickToMove clickToMove;
     Shooting Shooting;
+    [SerializeField] public bool isFriendly;
 
     
 

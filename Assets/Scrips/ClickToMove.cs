@@ -6,20 +6,19 @@ public class ClickToMove : MonoBehaviour
 {
     [Header("Movement Control")]
     Vector3 destination;
-    Rigidbody rb;
     [SerializeField] public Transform destinationDummie;
     private NavMeshAgent agent;
     Animator animator;
     bool isSelectingDestination = false;
-
+    Units unit;
     void OnEnable()
     {
-        rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        unit = GetComponent<Units>();
 
         agent.updatePosition = false;
-        agent.destination = transform.position;   //  para evitar errores al activarse
+        //agent.destination = transform.position;   //  para evitar errores al activarse
     }
 
      public void EnableMoveMode()
@@ -33,13 +32,27 @@ public class ClickToMove : MonoBehaviour
         if (Input.GetMouseButtonDown(1)) // botón derecho del mouse
         {
             HandleClick();
+            isSelectingDestination = false;
         }
 
         // --- ANIMACION ---
         animator.SetFloat("forwardMovement", agent.velocity.magnitude);
 
+        
+        if (!unit.hasMoved && agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending && agent.hasPath)
+        {
+            unit.FinishMovement();
+        }
+        if (agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending)
+        {
+            animator.SetFloat("forwardMovement", 0f);
+        }
+        else
+        {
+            animator.SetFloat("forwardMovement", agent.velocity.magnitude);
+        }
         // --- TERMINAR MOVIMIENTO AL LLEGAR ---
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        /*if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
             {
@@ -53,11 +66,12 @@ public class ClickToMove : MonoBehaviour
                 // Desactivar el ClickToMove para no seguir moviendo
                 this.enabled = false;
             }
-        }
+        }*/
     }
 
     public void HandleClick()
     {
+        Debug.Log("Click detected, handling movement...");
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -79,5 +93,6 @@ public class ClickToMove : MonoBehaviour
         Vector3 position = animator.rootPosition;
         position.y = agent.nextPosition.y;
         transform.position = position;
+        agent.nextPosition = transform.position;
     }
 }

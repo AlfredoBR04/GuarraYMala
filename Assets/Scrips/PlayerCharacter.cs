@@ -32,4 +32,9 @@ public class PlayerCharacter : Character
     {
         level++;
     }
+
+    public Weapon GetEquippedWeapon()
+    {
+        return equippedWeapon;
+    }
 }

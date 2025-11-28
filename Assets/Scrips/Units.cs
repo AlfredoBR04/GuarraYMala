@@ -13,7 +13,7 @@ public class Units : MonoBehaviour
     ClickToMove clickToMove;
     Shooting shooting;
     GameObject targetSelection;
-    public bool isPlayerUnit;
+    
 
     public TMP_Text endTurn;
 
@@ -31,7 +31,7 @@ public class Units : MonoBehaviour
         if (hasActed || hasMoved)
             return;
         
-        if (isPlayerUnit) 
+        if (isFriendly) 
         {
             clickToMove.EnableMoveMode();
             clickToMove.destinationDummie.position = transform.position;
@@ -52,14 +52,27 @@ public class Units : MonoBehaviour
 
         if (isFriendly)
         {
-            shooting.enabled = true;
-            targetSelection.SetActive(true);
+            PlayerCharacter playerChar = GetComponent<PlayerCharacter>();
+            float damageDealt = 10f;
+            string weaponUsed = "puño";
+            
+            if (playerChar != null)
+            {
+                Weapon equippedWeapon = playerChar.GetEquippedWeapon();
+                if (equippedWeapon != null)
+                {
+                    damageDealt = equippedWeapon.GetWeaponDamage();
+                    weaponUsed = equippedWeapon.GetWeaponName();
+                }
+            }
+            
+            Debug.Log(characterName + " ataca con " + weaponUsed + " causando " + damageDealt + " de daño");
+            StartCoroutine(MostrarAccion(endTurn, characterName + " ataca con " + weaponUsed));
         }
         else
         {
             Debug.Log("Ataca pero en malvado");
         }
-        StartCoroutine (MostrarAccion(endTurn, characterName + " usa la acción de atacar"));
 
         Debug.Log(characterName + " usa la accion atacar");
         FinishAttack();

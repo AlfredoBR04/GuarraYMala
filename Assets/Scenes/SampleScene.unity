@@ -1590,7 +1590,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 729180033}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1436131740}
+        m_TargetAssemblyTypeName: Units, Assembly-CSharp
+        m_MethodName: FinishAction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &729180033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2097,7 +2109,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 6f77a60bc266d354daa5136de47a05df, type: 2}
     - target: {fileID: 6338058166827389567, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.516
+      value: 1.51
       objectReference: {fileID: 0}
     - target: {fileID: 6338058166827389567, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2105,7 +2117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6338058166827389567, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -21.72
+      value: -20.77
       objectReference: {fileID: 0}
     - target: {fileID: 6338058166827389567, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2151,9 +2163,6 @@ PrefabInstance:
       addedObject: {fileID: 840455089}
     - targetCorrespondingSourceObject: {fileID: 6338058166827552287, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 840455088}
-    - targetCorrespondingSourceObject: {fileID: 6338058166827552287, guid: 871f05d311d47b744978b155e14694e3, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 840455087}
     - targetCorrespondingSourceObject: {fileID: 6338058166827552287, guid: 871f05d311d47b744978b155e14694e3, type: 3}
       insertIndex: -1
@@ -2193,36 +2202,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2.3111196
+  m_Height: 1.849488
   m_Direction: 1
-  m_Center: {x: 0, y: 0.6555598, z: 0}
---- !u!54 &840455088
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840455086}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Center: {x: 0, y: 0.88637555, z: 0}
 --- !u!114 &840455089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2250,7 +2232,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 700
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -2274,7 +2256,6 @@ MonoBehaviour:
   hasActed: 0
   hasMoved: 0
   isFriendly: 1
-  isPlayerUnit: 0
   endTurn: {fileID: 1649599024}
 --- !u!114 &840455092
 MonoBehaviour:
@@ -3867,7 +3848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3074657719725199962, guid: cbbcf6e267045b043ae0a5d0debc8280, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12.379963
+      value: -13.05
       objectReference: {fileID: 0}
     - target: {fileID: 3074657719725199962, guid: cbbcf6e267045b043ae0a5d0debc8280, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4852,7 +4833,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1337206628}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1436131740}
+        m_TargetAssemblyTypeName: Units, Assembly-CSharp
+        m_MethodName: Attack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1337206628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4912,7 +4905,6 @@ MonoBehaviour:
   hasActed: 1
   hasMoved: 0
   isFriendly: 0
-  isPlayerUnit: 0
   endTurn: {fileID: 0}
 --- !u!114 &1401497386
 MonoBehaviour:
@@ -4941,7 +4933,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -4997,6 +4989,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   visionRange: 10
+  attackRange: 0
+  weaponRange: 0
 --- !u!114 &1401497397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5129,7 +5123,6 @@ MonoBehaviour:
   hasActed: 0
   hasMoved: 0
   isFriendly: 1
-  isPlayerUnit: 0
   endTurn: {fileID: 738701076}
 --- !u!114 &1436131741
 MonoBehaviour:
@@ -5158,7 +5151,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -5236,6 +5229,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 19b580b1433c2954396092a58a90d18c, type: 2}
   weaponList:
   - {fileID: 11400000, guid: 7b255efc25951bc4b97f1f489784a828, type: 2}
+--- !u!114 &1436131752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436131736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b750136ab6458449a657b57bee3c392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrenadierEvents
 --- !u!43 &1563988392
 Mesh:
   m_ObjectHideFlags: 0
@@ -6152,7 +6157,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3830910435362576470, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.4724865
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 3830910435362576470, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6160,7 +6165,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3830910435362576470, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -21.736195
+      value: -21.23
       objectReference: {fileID: 0}
     - target: {fileID: 3830910435362576470, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6219,6 +6224,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3830910435362079862, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1436131749}
+    - targetCorrespondingSourceObject: {fileID: 3830910435362079862, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1436131752}
   m_SourcePrefab: {fileID: 100100000, guid: 72c9dad2fd884694abb99b8dc561f15d, type: 3}
 --- !u!1 &1844314489
 GameObject:
@@ -6303,13 +6311,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1436131740}
+        m_TargetAssemblyTypeName: Units, Assembly-CSharp
+        m_MethodName: Move
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

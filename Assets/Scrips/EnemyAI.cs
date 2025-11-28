@@ -1,137 +1,153 @@
-using UnityEngine;
-using System.Collections;
 using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Units))]
 [RequireComponent(typeof(Shooting))]
-
 public class EnemyAI : MonoBehaviour
 {
-    private Units units;
+    private Units unit;
     private Shooting shooting;
-    [SerializeField] float visionRange = 10f;
-    private float attackRange;
+    [SerializeField] private float visionRange = 30f;
+    [SerializeField] private float attackRange;
+    public float weaponRange;
+    private bool isActing = false;
     NavMeshAgent agent;
+    Animator animator;
 
-    void Awake()
+    void Start()
     {
-        units = GetComponent<Units>();
+        attackRange = weaponRange;
+    }
+
+    private void Awake()
+    {
+        unit = GetComponent<Units>();
         shooting = GetComponent<Shooting>();
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        if (units.isFriendly)
-        {
-            return;
-        }
+        if (unit.isFriendly) return;
+
         if (TurnManager.Instance.isPlayerTurn)
         {
-            //unit.hasActed = true;
             return;
         }
-        if (!units.hasActed)
+
+        if (!isActing)
         {
-            
-            StartCoroutine(DoEnemyTurn());
+            StartCoroutine(DoenemyTurn());
         }
     }
 
-
-    private IEnumerator DoEnemyTurn()
+    IEnumerator DoenemyTurn()
     {
+        isActing = true;
+
         Units target = FindClosestPlayerUnit();
+
         if (target == null)
         {
-            Debug.Log(units.characterName + ": No player units found, skipping turn.");
-            units.FinishAction();
+            Debug.Log(unit.characterName + " no encuentra objetivos validos");
+            unit.FinishAction();
+            isActing = false;
             yield break;
         }
 
         float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
+        // Intentar atacar inmediatamente
         if (distanceToTarget <= attackRange && hasLineOfSight(target))
         {
             yield return AttackTarget(target);
+            unit.FinishAction();
         }
-        else //Muevo al personaje para que este en la linea de vision
+        else
         {
+            // Moverse hacia el objetivo
             yield return MoveTowardTarget(target.transform.position);
 
-            //Vuelvo a intentar disparar al personaje
-
+            // Intentar atacar otra vez
             distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
             if (distanceToTarget <= attackRange && hasLineOfSight(target))
             {
                 yield return AttackTarget(target);
             }
-            else
-                units.FinishAction();
         }
 
-
-
-    }
-
-    private IEnumerator MoveTowardTarget(Vector3 position)
-    {
-        Debug.Log(units.characterName + "Se mueve buscando a su objetivo");
-        yield return new WaitForSeconds(5);
-        units.FinishMovement();
+        // terminar el turno
+        unit.FinishAction();
+        isActing = false;
     }
 
 
-    private bool hasLineOfSight(Units target)
+    private IEnumerator MoveTowardTarget(Vector3 targetPosition)
     {
-        return shooting.IsOnLoS(target.transform.position, attackRange);
+        Debug.Log(unit.characterName + " se mueve buscando a su objetivo:");
+
+        
+        agent.isStopped = false;
+        agent.destination = targetPosition;
+
+        while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
+        {
+            animator.SetFloat("forwardMovement", agent.velocity.magnitude);
+            yield return null;
+        }
+
+        agent.isStopped = true;
+        animator.SetFloat("forwardMovement", 0f);
+        unit.FinishMovement(); // para de moverse
     }
 
 
     private IEnumerator AttackTarget(Units target)
     {
-        Debug.Log(units.characterName + " is attacking " + target.characterName);
+        Debug.Log(unit.characterName + " ataca a " + target.characterName);
 
-        Vector3 lookDirection = target.transform.position - transform.position;
-        lookDirection.y = 0;
-        if (lookDirection != Vector3.zero)
+        Vector3 lookDir = target.transform.position - transform.position;
+        lookDir.y = 0f;
+        if (lookDir != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(lookDirection);
+            transform.rotation = Quaternion.LookRotation(lookDir);
         }
 
         shooting.Shoot(target.transform.position, attackRange);
-        units.hasActed = true;
+        yield return new WaitForSeconds(0.2f);
 
-        yield return new WaitForSeconds(1f); // Espera 1 segundo para simular el tiempo de ataque
-
-        if (units.hasMoved)
-        {
-            units.FinishAttack();
-            units.FinishAction();
-
-        }
-        else
-        {
-            units.FinishAttack();
-        }
+        unit.FinishAttack();  // ataca
     }
 
+
+    private bool hasLineOfSight(Units target)
+    {
+        return shooting.IsOnLoS(target.transform.position, weaponRange);
+    }
 
 
     private Units FindClosestPlayerUnit()
     {
+
+
         Units closest = null;
-        float closestDistance = Mathf.Infinity;
+        float closestDist = Mathf.Infinity;
+
         foreach (Units playerUnit in TurnManager.Instance.playerUnits)
         {
-            float distance = Vector3.Distance(transform.position, playerUnit.transform.position);
-            if (distance < closestDistance && distance <= visionRange)
+            float dist = Vector3.Distance(transform.position, playerUnit.transform.position);
+            if (dist < closestDist && dist <= visionRange)
             {
-                closestDistance = distance;
+                closestDist = dist;
                 closest = playerUnit;
             }
         }
+
         return closest;
+
     }
 }

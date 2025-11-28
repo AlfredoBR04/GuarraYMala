@@ -450,7 +450,7 @@ MonoBehaviour:
   characterName: GrenadierEnemigo
   hasActed: 0
   hasMoved: 0
-  isFriendly: 1
+  isFriendly: 0
   endTurn: {fileID: 0}
 --- !u!114 &163808047
 MonoBehaviour:

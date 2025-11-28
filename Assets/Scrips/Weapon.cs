@@ -9,6 +9,7 @@ public class Weapon : ScriptableObject
     [SerializeField] string weaponName;
     [SerializeField] int magazine;
     [SerializeField] int magazineSize;
+    [SerializeField] float weaponRange;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

@@ -1,55 +1,45 @@
 using UnityEngine;
+using TMPro;
+using System.Collections;
 
 public class Units : MonoBehaviour
 {
-    [SerializeField] string characterName;
+    [SerializeField] public string characterName;
 
     public bool hasActed = true;
-    public bool hasAttacked = false;
-    bool hasMoved = false;
-    public bool isPlayerUnit;
-    ClickToMove clickToMove;
-    Shooting Shooting;
+    bool hasAttacked = false;
+    public bool hasMoved = false;
     [SerializeField] public bool isFriendly;
+    ClickToMove clickToMove;
+    Shooting shooting;
+    GameObject targetSelection;
+    public bool isPlayerUnit;
 
-    
-
-     public bool isFriendly
-    {
-        get { return isPlayerUnit; }
-    }
+    public TMP_Text endTurn;
 
     private void Awake()
-{
-    
-    if (clickToMove != null)
     {
+        clickToMove = GetComponent<ClickToMove>();
+        shooting = GetComponent<Shooting>();
+
         clickToMove.enabled = false;
+        shooting.enabled = false;
     }
-    else
-    {
-        Debug.LogWarning(gameObject.name + " no tiene ClickToMove asignado.");
-    }
-}
 
     public void Move()
     {
-
-        Debug.Log ("le doy al boton");
         if (hasActed || hasMoved)
             return;
-
-        if (isPlayerUnit)
+        
+        if (isPlayerUnit) 
         {
+            clickToMove.EnableMoveMode();
+            clickToMove.destinationDummie.position = transform.position;
             clickToMove.enabled = true;
-            Debug.Log(characterName + " is moving.");
-        }
-        else
-        {
-            Debug.Log(characterName + " • an enemy unit is moving.");
+            Debug.Log(characterName + " Usa Mover");
+            
         }
         
-
         
     }
 
@@ -62,55 +52,68 @@ public class Units : MonoBehaviour
 
         if (isFriendly)
         {
-            Shooting.enabled = true;
+            shooting.enabled = true;
+            targetSelection.SetActive(true);
         }
-        Debug.Log(characterName + " is attacking.");
-        else 
+        else
         {
-            Debug.Log(characterName + "usa la accion Atacar");
-                FinishActtack();
+            Debug.Log("Ataca pero en malvado");
         }
-    }
+        StartCoroutine (MostrarAccion(endTurn, characterName + " usa la acción de atacar"));
 
+        Debug.Log(characterName + " usa la accion atacar");
+        FinishAttack();
+    }
 
     public void PassTurn()
     {
         if (hasActed)
+        {
             return;
+        }
+        StartCoroutine (MostrarAccion(endTurn, characterName + " finaliza el turno"));
 
-        Debug.Log(characterName + " is passing the turn.");
-
+        Debug.Log(characterName + " pasa su turno");
         FinishAction();
     }
 
-    
+    IEnumerator MostrarAccion (TMP_Text textoUI, string mensaje)
+    {
+        textoUI.text = mensaje;
+        textoUI.gameObject.SetActive (true);
+
+        yield return new WaitForSeconds (3f);
+
+        textoUI.gameObject.SetActive(false);
+
+    }
+
 
     public void StartTurnForThisUnit()
     {
         hasActed = false;
-        hasAttacked = false;   // corregido
+        hasAttacked = false;
         hasMoved = false;
     }
 
-
-
-    public void FinishMove()
+    public void FinishMovement ()
     {
         clickToMove.enabled = false;
         hasMoved = true;
-        Debug.Log(characterName + " has finished moving.");
     }
 
-    public void FinishAttack()
+    public void FinishAttack ()
     {
         hasAttacked = true;
     }
-
     public void FinishAction()
     {
         hasActed = true;
-        TurnManager.Instance.CheckEndTurn(); // ahora funciona
+        TurnManager.Instance.CheckEndTurn();
     }
 
-
+    public void EnableMovement()
+{
+    clickToMove.enabled = true;
+}
 }

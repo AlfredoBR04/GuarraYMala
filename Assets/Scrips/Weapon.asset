@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 353752ed104cdab40895375c6b839694, type: 3}
   m_Name: Weapon
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  weaponDamage: 0
-  weaponPenetration: 0
-  weaponName: 
-  magazine: 0
-  magazineSize: 0
+  weaponDamage: 20
+  weaponPenetration: 10
+  weaponName: Arma1
+  magazine: 12
+  magazineSize: 12
+  weaponRange: 12

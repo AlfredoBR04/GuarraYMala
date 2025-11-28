@@ -33,7 +33,7 @@ public class EnemyAI : MonoBehaviour
         }
         if (!units.hasActed)
         {
-            // Lógica simple de IA: buscar la unidad enemiga más cercana y disparar si está en línea de visión
+            
             StartCoroutine(DoEnemyTurn());
         }
     }
@@ -75,20 +75,17 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    private IEnumerable MoveTowardTarget(Vector3 position)
+    private IEnumerator MoveTowardTarget(Vector3 position)
     {
-        Debug.Log(unit.characterName + "Se mueve buscando a su objetivo");
-
-
-        agent.destination = targetPosition;
+        Debug.Log(units.characterName + "Se mueve buscando a su objetivo");
         yield return new WaitForSeconds(5);
-        units.FinishMove();
+        units.FinishMovement();
     }
 
 
     private bool hasLineOfSight(Units target)
     {
-        return shooting.isOnLoS(target.transform.position, attackRange);
+        return shooting.IsOnLoS(target.transform.position, attackRange);
     }
 
 
@@ -111,7 +108,7 @@ public class EnemyAI : MonoBehaviour
         if (units.hasMoved)
         {
             units.FinishAttack();
-            units.FinishAction
+            units.FinishAction();
 
         }
         else

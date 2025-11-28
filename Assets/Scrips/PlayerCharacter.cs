@@ -23,6 +23,11 @@ public class PlayerCharacter : Character
 
     }
 
+    void Earnexperience( float expGain)
+    {
+        experience += expGain;
+    }
+
     void LevelUp()
     {
         level++;

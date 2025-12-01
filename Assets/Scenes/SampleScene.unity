@@ -2480,7 +2480,7 @@ MonoBehaviour:
   hasActed: 0
   hasMoved: 0
   isFriendly: 1
-  endTurn: {fileID: 1649599024}
+  endTurn: {fileID: 0}
 --- !u!114 &840455092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5183,7 +5183,7 @@ MonoBehaviour:
   hasActed: 0
   hasMoved: 0
   isFriendly: 1
-  endTurn: {fileID: 738701076}
+  endTurn: {fileID: 0}
 --- !u!114 &1436131741
 MonoBehaviour:
   m_ObjectHideFlags: 0

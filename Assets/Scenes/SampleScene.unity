@@ -2348,10 +2348,7 @@ MonoBehaviour:
   hasMoved: 0
   isFriendly: 1
   endTurn: {fileID: 0}
-<<<<<<< HEAD
   actionPanel: {fileID: 2104627538}
-=======
->>>>>>> 22603152b3d93d6cb718d33014d136da8f6510ce
 --- !u!114 &840455092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5205,10 +5202,7 @@ MonoBehaviour:
   hasMoved: 0
   isFriendly: 1
   endTurn: {fileID: 0}
-<<<<<<< HEAD
   actionPanel: {fileID: 1789062883}
-=======
->>>>>>> 22603152b3d93d6cb718d33014d136da8f6510ce
 --- !u!114 &1436131741
 MonoBehaviour:
   m_ObjectHideFlags: 0

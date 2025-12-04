@@ -10,68 +10,83 @@ public class UnitSelection : MonoBehaviour
     {
         Instance = this;
     }
-    
-    void Start()
-    {
-        
-    }
 
     void Update()
     {
         if (!TurnManager.Instance.isPlayerTurn)
-        {
             return;
-        }
+
+        // ⬅ Usamos el lock del TURNMANAGER
+        if (TurnManager.Instance.selectionLocked)
+            return;
 
         if (Input.GetMouseButtonDown(0))
         {
-            // Ignorar clics sobre UI
             if (EventSystem.current.IsPointerOverGameObject())
-            {
                 return;
-            }
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                Units units = hit.collider.GetComponent<Units>();
+                Units unit = hit.collider.GetComponent<Units>();
 
-                // Verificar que sea una unidad aliada en TurnManager.playerUnits
-                bool isPlayerUnit = false;
-                if (units != null && TurnManager.Instance != null && TurnManager.Instance.playerUnits != null)
+                if (unit != null &&
+                    unit.isFriendly &&
+                    TurnManager.Instance.playerUnits.Contains(unit) &&
+                    !unit.hasActed)
                 {
-                    isPlayerUnit = TurnManager.Instance.playerUnits.Contains(units) && units.isFriendly;
+                    SelectUnit(unit);
                 }
-
-                if (isPlayerUnit && !units.hasActed)
-                {
-                    SelectUnit(units);
-                    Debug.Log("soy una unidad" + units.name + " seleccionada");
-                }
-                else if (units != null)
-                {
-                    // Solo deseleccionar si clicas sobre otra unidad (no seleccionable)
-                    DeselectUnit();
-                    Debug.Log("unidad no seleccionable");
-                }
-                // Si no es unidad, mantiene la selección anterior
             }
         }
     }
 
-    private void SelectUnit(Units units)
+    private void SelectUnit(Units unit)
     {
-        selectedUnit = units;
-        // Implement unit selection logic here
-    }
-    
-    public void DeselectUnit()
-    {
-        if(selectedUnit != null)
+        if (selectedUnit != null)
+            selectedUnit.EnableActionButtons(false);
+
+        selectedUnit = unit;
+
+        // ⬅ Bloquear selección desde el TurnManager
+        TurnManager.Instance.selectionLocked = true;
+        TurnManager.Instance.selectedUnit = unit;
+
+        foreach (Units u in TurnManager.Instance.playerUnits)
         {
-            selectedUnit = null;
+            if (u == unit)
+                u.EnableActionButtons(true);
+            else
+                u.EnableActionButtons(false);
         }
+
+        Debug.Log("Unidad seleccionada: " + unit.characterName);
+    }
+
+    public void PassTurn()
+    {
+        if (selectedUnit != null)
+        {
+            selectedUnit.hasActed = true;
+            selectedUnit.EnableActionButtons(false);
+        }
+
+        selectedUnit = null;
+
+        // ⬅ Liberar selección desde el TurnManager
+        TurnManager.Instance.selectionLocked = false;
+        TurnManager.Instance.selectedUnit = null;
+
+        foreach (Units u in TurnManager.Instance.playerUnits)
+            u.EnableActionButtons(false);
+
+        TurnManager.Instance.CheckEndTurn();
+    }
+
+    public Units GetSelectedUnit()
+    {
+        return selectedUnit;
     }
 }

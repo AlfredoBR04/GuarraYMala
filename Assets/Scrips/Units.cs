@@ -18,6 +18,9 @@ public class Units : MonoBehaviour
 
     public GameObject actionPanel;
 
+    PlayerCharacter playerChar;
+    public WeaponSelectionUI weaponSelectionUI;
+
     private void Awake()
     {
         clickToMove = GetComponent<ClickToMove>();
@@ -28,17 +31,35 @@ public class Units : MonoBehaviour
 
         if (actionPanel != null)
             actionPanel.SetActive(false);
+
+         if (playerChar != null && playerChar.targetSelectionPanel != null)
+            playerChar.targetSelectionPanel.SetActive(false);
     }
 
     public void Move()
     {
+        Debug.Log(characterName + " - Move() llamado. hasActed=" + hasActed + ", hasMoved=" + hasMoved);
+        
         if (hasActed || hasMoved)
+        {
+            Debug.LogWarning(characterName + " - No puede moverse. hasActed=" + hasActed + ", hasMoved=" + hasMoved);
             return;
+        }
 
         if (isFriendly) 
         {
-            clickToMove.destinationDummie.position = transform.position;
-            clickToMove.enabled = true;
+            // Asegurarse de que el movimiento esté habilitado
+            if (clickToMove != null)
+            {
+                clickToMove.EnableMoveMode();
+                clickToMove.destinationDummie.position = transform.position;
+                clickToMove.enabled = true;
+                Debug.Log(characterName + " - ClickToMove habilitado y listo para moverse");
+            }
+            else
+            {
+                Debug.LogError(characterName + " - clickToMove es null!");
+            }
 
             Debug.Log(characterName + " Usa Mover");
         }
@@ -52,7 +73,34 @@ public class Units : MonoBehaviour
         if (isFriendly)
         {
             PlayerCharacter playerChar = GetComponent<PlayerCharacter>();
+            
+            if (playerChar != null)
+            {
+                // Mostrar panel de selección de armas con botones
+                if (weaponSelectionUI != null)
+                {
+                    weaponSelectionUI.ShowWeaponSelection(this);
+                    playerChar.ShowWeaponSelectionPanel();
+                }
+                else
+                {
+                    Debug.LogWarning("WeaponSelectionUI no está asignado. Asígnalo en el Inspector.");
+                }
+            }
+        }
+        
+    }
+
+    public void ExecuteAttackWithWeapon()
+    {
+        if (hasActed || hasAttacked)
+            return;
+
+        if (isFriendly)
+        {
+            PlayerCharacter playerChar = GetComponent<PlayerCharacter>();
             float damageDealt = 10f;
+            float penetration = 0f;
             float attackRange = 5f;  // Rango por defecto si no tiene arma
             string weaponUsed = "puño";
             
@@ -62,9 +110,16 @@ public class Units : MonoBehaviour
                 if (equippedWeapon != null)
                 {
                     damageDealt = equippedWeapon.GetWeaponDamage();
+                    penetration = equippedWeapon.GetWeaponPenetration();
                     weaponUsed = equippedWeapon.GetWeaponName();
                     attackRange = equippedWeapon.GetWeaponRange();
                 }
+            }
+            
+            if (playerChar != null && playerChar.targetSelectionPanel != null)
+            {
+                // ➕ Abrir panel de selección de enemigos
+                playerChar.targetSelectionPanel.SetActive(true);
             }
 
             // Buscar enemigos en rango
@@ -73,18 +128,31 @@ public class Units : MonoBehaviour
             if (targetInRange != null)
             {
                 Debug.Log(characterName + " ataca con " + weaponUsed + " causando " + damageDealt + " de daño a " + targetInRange.characterName);
-                StartCoroutine(MostrarAccion(endTurn, characterName + " ataca a " + targetInRange.characterName));
-                // Aquí puedes aplicar daño a targetInRange
+                
+                // Aplicar daño al enemigo (incluyendo penetración del arma)
+                Character targetCharacter = targetInRange.GetComponent<Character>();
+                if (targetCharacter != null)
+                {
+                    targetCharacter.TakeDamage(damageDealt, penetration);
+                    
+                    // Verificar si el enemigo murió
+                    if (!targetCharacter.IsAlive())
+                    {
+                        StartCoroutine(MostrarAccion(endTurn, targetInRange.characterName + " ha muerto"));
+                        targetInRange.enabled = false;  // Deshabilitar el Unit muerto
+                        targetInRange.gameObject.SetActive(false);  // Ocultar el enemigo muerto
+                    }
+                    else
+                    {
+                        StartCoroutine(MostrarAccion(endTurn, characterName + " ataca a " + targetInRange.characterName + " (-" + damageDealt + ")"));
+                    }
+                }
             }
             else
             {
                 Debug.Log(characterName + " intenta atacar con " + weaponUsed + " pero no hay enemigos en rango (" + attackRange + "m)");
                 StartCoroutine(MostrarAccion(endTurn, "Sin enemigos en rango"));
             }
-        }
-        else
-        {
-            Debug.Log("Ataca pero en malvado");
         }
 
         FinishAttack();
@@ -140,6 +208,16 @@ public class Units : MonoBehaviour
         hasActed = false;
         hasAttacked = false;
         hasMoved = false;
+        
+        Debug.Log(characterName + " - StartTurnForThisUnit: hasActed=" + hasActed + ", hasMoved=" + hasMoved + ", hasAttacked=" + hasAttacked);
+        
+        // Resetear el sistema de movimiento para permitir movimiento en el nuevo turno
+        if (clickToMove != null)
+        {
+            clickToMove.EnableMoveMode();
+            
+        }
+        
     }
 
     public void FinishMovement()

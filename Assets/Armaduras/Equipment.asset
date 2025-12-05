@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dcf55810df5c0f45a94485d8b6313bd, type: 3}
   m_Name: Equipment
   m_EditorClassIdentifier: Assembly-CSharp::Equipment
-  maxDurability: 0
-  currentDurability: 0
-  movementSpeed: 0
-  armor: 0
+  maxDurability: 5
+  currentDurability: 5
+  movementSpeed: 2
+  armor: 5

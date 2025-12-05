@@ -32,6 +32,14 @@ public class ClickToMove : MonoBehaviour
 
     void Update()
     {
+        // No permitir movimiento si el personaje está muerto
+        Character character = GetComponent<Character>();
+        if (character != null && !character.IsAlive())
+        {
+            agent.enabled = false;
+            return;
+        }
+
         //CLICK PARA MOVER SOLO UNA VEZ
         if (Input.GetMouseButtonDown(1) && !hasMovedOnce)
         {
@@ -101,5 +109,10 @@ public class ClickToMove : MonoBehaviour
         position.y = agent.nextPosition.y;
         transform.position = position;
         agent.nextPosition = transform.position;
+    }
+
+    public void EnableMoveMode()
+    {
+        hasMovedOnce = false;
     }
 }

@@ -10,15 +10,14 @@ public class EnemyAI : MonoBehaviour
     private Units unit;
     private Shooting shooting;
     [SerializeField] private float visionRange = 30f;
-    [SerializeField] private float attackRange;
-    public float weaponRange;
+    private float attackRange;
     private bool isActing = false;
     NavMeshAgent agent;
     Animator animator;
 
     void Start()
     {
-        attackRange = weaponRange;
+        UpdateAttackRange();
     }
 
     private void Awake()
@@ -29,11 +28,48 @@ public class EnemyAI : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    private void UpdateAttackRange()
+    {
+        // Obtener el rango del arma equipada
+        EnemyCharacter enemyChar = GetComponent<EnemyCharacter>();
+        if (enemyChar != null)
+        {
+            Weapon equippedWeapon = enemyChar.GetEquippedWeapon();
+            if (equippedWeapon != null)
+            {
+                attackRange = equippedWeapon.GetWeaponRange();
+            }
+            else
+            {
+                attackRange = 5f; // Rango por defecto
+            }
+        }
+        else
+        {
+            attackRange = 5f;
+        }
+    }
+
     void Update()
     {
         if (unit.isFriendly) return;
 
+        // No actuar si el enemigo está muerto
+        Character character = GetComponent<Character>();
+        if (character != null && !character.IsAlive())
+        {
+            if (agent != null)
+                agent.enabled = false;
+            return;
+        }
+
         if (TurnManager.Instance.isPlayerTurn)
+        {
+            return;
+        }
+
+        // No actuar si ya actuó en este turno
+        if (unit.hasActed)
         {
             return;
         }
@@ -48,6 +84,17 @@ public class EnemyAI : MonoBehaviour
     {
         isActing = true;
 
+        // Si está muerto, pasar turno inmediatamente
+        Character character = GetComponent<Character>();
+        if (character != null && !character.IsAlive())
+        {
+            Debug.Log(unit.characterName + " está muerto, pasa turno");
+            gameObject.SetActive(false);  // Ocultar el enemigo muerto
+            unit.FinishAction();
+            isActing = false;
+            yield break;
+        }
+
         Units target = FindClosestPlayerUnit();
 
         if (target == null)
@@ -60,27 +107,37 @@ public class EnemyAI : MonoBehaviour
 
         float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
-        // Intentar atacar inmediatamente
+        // Verificar si hay un jugador en rango de ataque inmediatamente
         if (distanceToTarget <= attackRange && hasLineOfSight(target))
         {
+            // Detenerse y atacar sin moverse
+            agent.isStopped = true;
             yield return AttackTarget(target);
             unit.FinishAction();
+            isActing = false;
+            yield break;  // Terminar turno después de atacar
         }
-        else
+
+        // Si no hay nadie en rango, moverse hacia el objetivo más cercano
+        yield return MoveTowardTarget(target.transform.position);
+
+        // Verificar nuevamente después de moverse
+        distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+        target = FindClosestPlayerUnit();  // Buscar de nuevo por si cambió
+
+        if (target != null && distanceToTarget <= attackRange && hasLineOfSight(target))
         {
-            // Moverse hacia el objetivo
-            yield return MoveTowardTarget(target.transform.position);
-
-            // Intentar atacar otra vez
-            distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-
-            if (distanceToTarget <= attackRange && hasLineOfSight(target))
-            {
-                yield return AttackTarget(target);
-            }
+            // Detenerse antes de atacar
+            agent.isStopped = true;
+            yield return AttackTarget(target);
+            // Terminar inmediatamente después del ataque
+            unit.FinishAction();
+            isActing = false;
+            yield break;
         }
 
-        // terminar el turno
+        // Si no pudo atacar después de moverse, terminar el turno
+        agent.isStopped = true;
         unit.FinishAction();
         isActing = false;
     }
@@ -88,9 +145,6 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator MoveTowardTarget(Vector3 targetPosition)
     {
-        Debug.Log(unit.characterName + " se mueve buscando a su objetivo:");
-
-        
         agent.isStopped = false;
         agent.destination = targetPosition;
 
@@ -117,7 +171,44 @@ public class EnemyAI : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(lookDir);
         }
 
+        // Obtener el arma del enemigo
+        EnemyCharacter enemyChar = GetComponent<EnemyCharacter>();
+        float damageDealt = 10f;
+        float penetration = 0f;
+        string weaponUsed = "puño";
+        
+        if (enemyChar != null)
+        {
+            Weapon equippedWeapon = enemyChar.GetEquippedWeapon();
+            if (equippedWeapon != null)
+            {
+                damageDealt = equippedWeapon.GetWeaponDamage();
+                penetration = equippedWeapon.GetWeaponPenetration();
+                weaponUsed = equippedWeapon.GetWeaponName();
+            }
+        }
+
         shooting.Shoot(target.transform.position, attackRange);
+        
+        // Aplicar daño al jugador
+        Character targetCharacter = target.GetComponent<Character>();
+        if (targetCharacter != null)
+        {
+            targetCharacter.TakeDamage(damageDealt, penetration);
+            
+            // Verificar si el jugador murió
+            if (!targetCharacter.IsAlive())
+            {
+                Debug.Log(target.characterName + " ha muerto por ataque de " + unit.characterName);
+                target.enabled = false;
+                target.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.Log(unit.characterName + " causa " + damageDealt + " de daño a " + target.characterName + " con " + weaponUsed);
+            }
+        }
+        
         yield return new WaitForSeconds(0.2f);
 
         unit.FinishAttack();  // ataca
@@ -126,19 +217,24 @@ public class EnemyAI : MonoBehaviour
 
     private bool hasLineOfSight(Units target)
     {
-        return shooting.IsOnLoS(target.transform.position, weaponRange);
+        return shooting.IsOnLoS(target.transform.position, attackRange);
     }
 
 
     private Units FindClosestPlayerUnit()
     {
-
-
         Units closest = null;
         float closestDist = Mathf.Infinity;
 
         foreach (Units playerUnit in TurnManager.Instance.playerUnits)
         {
+            if (playerUnit == null) continue;
+            
+            // Ignorar unidades muertas
+            Character playerCharacter = playerUnit.GetComponent<Character>();
+            if (playerCharacter != null && !playerCharacter.IsAlive())
+                continue;
+
             float dist = Vector3.Distance(transform.position, playerUnit.transform.position);
             if (dist < closestDist && dist <= visionRange)
             {

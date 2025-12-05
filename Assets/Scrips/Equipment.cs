@@ -9,7 +9,18 @@ public class Equipment : ScriptableObject
     [SerializeField] float movementSpeed;
     [SerializeField] float armor;
 
+    public float GetArmor()
+    {
+        return armor;
+    }
 
+    public float GetMovementSpeed()
+    {
+        return movementSpeed;
+    }
 
-
+    public float GetDurability()
+    {
+        return currentDurability;
+    }
 }

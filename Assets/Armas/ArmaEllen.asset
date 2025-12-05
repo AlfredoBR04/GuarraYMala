@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ArmaEllen
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
   weaponDamage: 20
-  weaponPenetration: 10
-  weaponName: Arma1
+  weaponPenetration: 0
+  weaponName: Media distancia
   magazine: 12
   magazineSize: 12
-  weaponRange: 5
+  weaponRange: 6
